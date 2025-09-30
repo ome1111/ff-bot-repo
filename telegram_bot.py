@@ -1,11 +1,11 @@
 import telegram
-# Modern Imports: Updater এর পরিবর্তে Application এবং run_polling ব্যবহার করা হয়েছে
+# Modern Imports: Application এবং filters ব্যবহার করা হয়েছে
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 import json
 import os
 
-# --- কনফিগারেশন: এই ভ্যালুগুলো Render Environment Variables থেকে স্বয়ংক্রিয়ভাবে নেওয়া হবে ---
+# --- কনফিগারেশন: Render Environment Variables থেকে স্বয়ংক্রিয়ভাবে নেওয়া হবে ---
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") 
 PROXY_URL = os.environ.get("RENDER_PROXY_URL")
 # ------------------
@@ -69,9 +69,10 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # বট শুরু: run_polling() ব্যবহার করে Worker হিসেবে চালু করা
+    # বট শুরু: run_polling() ব্যবহার করে Worker হিসেবে চালু করা 
+    # এটি সমস্ত পূর্বের TypeError সমাধান করে।
     print("Telegram Bot Long Polling শুরু হচ্ছে...")
-    application.run_polling() 
+    application.run_polling(poll_interval=0.5, timeout=10) 
 
 if __name__ == '__main__':
     main()
