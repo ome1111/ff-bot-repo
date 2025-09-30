@@ -1,6 +1,6 @@
 import telegram
-from telegram.ext import Updater, CommandHandler, MessageHandler
-from telegram.ext import filters # filters আমদানি করা হয়েছে
+# নতুন আমদানি: Application, filters এবং run_polling ব্যবহার করা হবে
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 import json
 import os
@@ -24,7 +24,7 @@ def send_like_request(uid):
         
         # আপনার হোস্টেড প্রক্সি সার্ভারে POST রিকোয়েস্ট পাঠানো হচ্ছে
         response = requests.post(PROXY_URL, json=payload, timeout=15)
-        response.raise_for_status() # HTTP এরর হলে এক্সেপশন থ্রো করবে
+        response.raise_for_status() 
         
         result = response.json()
 
@@ -62,19 +62,19 @@ def main():
         print("FATAL ERROR: TELEGRAM_BOT_TOKEN is not set.")
         return
 
-    # Updater শুরু করা: use_context=True আর্গুমেন্টটি বাদ দেওয়া হয়েছে
-    updater = Updater(TELEGRAM_BOT_TOKEN) 
-    dp = updater.dispatcher
-
+    # Modern Approach: Updater এর পরিবর্তে Application ব্যবহার করা হচ্ছে
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    
     # Command Handler
-    dp.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("start", start))
     
     # Message Handler
-    dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # বট শুরু: Long Polling মোড ব্যবহার করা হচ্ছে
-    updater.start_polling()
-    updater.idle()
+    print("Telegram Bot Long Polling শুরু হচ্ছে...")
+    application.run_polling()
+    # application.run_polling() এখন আগের start_polling() এবং idle() এর কাজ করে
 
 if __name__ == '__main__':
     main()
