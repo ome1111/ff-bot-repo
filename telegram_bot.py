@@ -1,5 +1,5 @@
 import telegram
-# নতুন আমদানি: Application, filters এবং run_polling ব্যবহার করা হবে
+# Modern Imports: Updater এর পরিবর্তে Application এবং run_polling ব্যবহার করা হয়েছে
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import requests
 import json
@@ -62,19 +62,16 @@ def main():
         print("FATAL ERROR: TELEGRAM_BOT_TOKEN is not set.")
         return
 
-    # Modern Approach: Updater এর পরিবর্তে Application ব্যবহার করা হচ্ছে
+    # Modern Approach: Application.builder().token() ব্যবহার করে বট তৈরি করা
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
-    # Command Handler
+    # Handlers যোগ করা
     application.add_handler(CommandHandler("start", start))
-    
-    # Message Handler
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # বট শুরু: Long Polling মোড ব্যবহার করা হচ্ছে
+    # বট শুরু: run_polling() ব্যবহার করে Worker হিসেবে চালু করা
     print("Telegram Bot Long Polling শুরু হচ্ছে...")
-    application.run_polling()
-    # application.run_polling() এখন আগের start_polling() এবং idle() এর কাজ করে
+    application.run_polling() 
 
 if __name__ == '__main__':
     main()
