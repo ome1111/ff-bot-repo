@@ -1,11 +1,12 @@
 import telegram
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler
+# Filters-কে এখন telegram.ext.filters মডিউল থেকে আমদানি করা হচ্ছে
+from telegram.ext import filters 
 import requests
 import json
 import os
 
-# --- কনফিগারেশন ---
-# টোকেন ও URL এনভায়রনমেন্ট ভ্যারিয়েবল (Environment Variables) থেকে নেওয়া হবে
+# --- কনফিগারেশন: এই ভ্যালুগুলো Render Environment Variables থেকে স্বয়ংক্রিয়ভাবে নেওয়া হবে ---
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") 
 PROXY_URL = os.environ.get("RENDER_PROXY_URL")
 # ------------------
@@ -66,9 +67,12 @@ def main():
     updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
 
-    # বিভিন্ন কমান্ড হ্যান্ডেল করা
+    # Command Handler
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    
+    # Message Handler (Filters.text এর পরিবর্তে filters.TEXT ব্যবহার করা হলো)
+    # filters.COMMAND বাদ দিয়ে শুধু টেক্সট মেসেজ হ্যান্ডেল করা হচ্ছে
+    dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # বট শুরু: Long Polling মোড ব্যবহার করা হচ্ছে
     updater.start_polling()
