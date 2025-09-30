@@ -1,7 +1,6 @@
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler
-# Filters-কে এখন telegram.ext.filters মডিউল থেকে আমদানি করা হচ্ছে
-from telegram.ext import filters 
+from telegram.ext import filters # filters আমদানি করা হয়েছে
 import requests
 import json
 import os
@@ -63,15 +62,14 @@ def main():
         print("FATAL ERROR: TELEGRAM_BOT_TOKEN is not set.")
         return
 
-    # Updater শুরু করা
-    updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
+    # Updater শুরু করা: use_context=True আর্গুমেন্টটি বাদ দেওয়া হয়েছে
+    updater = Updater(TELEGRAM_BOT_TOKEN) 
     dp = updater.dispatcher
 
     # Command Handler
     dp.add_handler(CommandHandler("start", start))
     
-    # Message Handler (Filters.text এর পরিবর্তে filters.TEXT ব্যবহার করা হলো)
-    # filters.COMMAND বাদ দিয়ে শুধু টেক্সট মেসেজ হ্যান্ডেল করা হচ্ছে
+    # Message Handler
     dp.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # বট শুরু: Long Polling মোড ব্যবহার করা হচ্ছে
